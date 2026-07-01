@@ -1147,6 +1147,34 @@ p {
   }
 }
 
+/* Swipe Indicators */
+.swipe-indicators {
+  position: absolute;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.swipe-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  opacity: 0.3;
+  transition: opacity 0.2s, background-color 0.2s, transform 0.2s;
+}
+
+.swipe-dot.is-active {
+  opacity: 1;
+  background: var(--lavender-dark);
+  transform: scale(1.2);
+}
+
 /* View Transitions for Swipe */
 @keyframes slide-to-left {
   to { transform: translateX(-100%); }

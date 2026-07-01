@@ -192,6 +192,11 @@ export function App() {
         )}
       </main>
 
+      <div className="swipe-indicators" aria-hidden="true">
+        <div className={`swipe-dot ${view === 'today' ? 'is-active' : ''}`} />
+        <div className={`swipe-dot ${view === 'history' ? 'is-active' : ''}`} />
+      </div>
+
       {appMessage && <div className="app-alert" role="alert">{appMessage}</div>}
     </div>
   )

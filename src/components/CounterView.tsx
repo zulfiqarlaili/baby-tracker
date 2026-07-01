@@ -105,8 +105,6 @@ export function CounterView({
           onInstall={onInstall}
         />
       )}
-
-      <p className="privacy-note">Private by design · Saved only on this device</p>
     </section>
   )
 }
