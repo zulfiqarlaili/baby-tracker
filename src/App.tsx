@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { CounterView } from './components/CounterView'
 import { HistoryView } from './components/HistoryView'
-import { Icon } from './components/Icon'
 import { Onboarding } from './components/Onboarding'
 import { useClock } from './hooks/useClock'
 import { useInstallPrompt } from './hooks/useInstallPrompt'
@@ -14,6 +14,7 @@ import {
 } from './lib/storage'
 import { getTrackingDay } from './lib/trackingDay'
 import type { KickEvent, KickStoreV1, UiPreferences } from './types'
+import { useSwipeable } from 'react-swipeable'
 
 type ViewName = 'today' | 'history'
 
@@ -40,6 +41,28 @@ export function App() {
       .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt)),
     [activeDay, store.events],
   )
+
+  function changeViewWithTransition(nextView: ViewName) {
+    if (view === nextView) return;
+
+    const direction = nextView === 'history' ? 'forward' : 'backward';
+    const doc = document as unknown as { startViewTransition?: (options: { update: () => void, types: string[] }) => void };
+
+    if (!doc.startViewTransition) {
+      setView(nextView);
+      return;
+    }
+
+    doc.startViewTransition({
+      update: () => flushSync(() => setView(nextView)),
+      types: [direction],
+    });
+  }
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => changeViewWithTransition('history'),
+    onSwipedRight: () => changeViewWithTransition('today'),
+  })
 
   useEffect(() => () => {
     if (celebrationTimerRef.current) window.clearTimeout(celebrationTimerRef.current)
@@ -142,7 +165,7 @@ export function App() {
   const visibleInstallMode = preferences.installPromptDismissed ? null : installPrompt.mode
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" {...swipeHandlers}>
       <main className="app-main">
         {view === 'today' ? (
           <CounterView
@@ -170,27 +193,6 @@ export function App() {
       </main>
 
       {appMessage && <div className="app-alert" role="alert">{appMessage}</div>}
-
-      <nav className="bottom-nav" aria-label="Main navigation">
-        <button
-          className={view === 'today' ? 'is-active' : ''}
-          type="button"
-          aria-current={view === 'today' ? 'page' : undefined}
-          onClick={() => setView('today')}
-        >
-          <Icon name="home" size={22} />
-          <span>Today</span>
-        </button>
-        <button
-          className={view === 'history' ? 'is-active' : ''}
-          type="button"
-          aria-current={view === 'history' ? 'page' : undefined}
-          onClick={() => setView('history')}
-        >
-          <Icon name="calendar" size={22} />
-          <span>History</span>
-        </button>
-      </nav>
     </div>
   )
 }

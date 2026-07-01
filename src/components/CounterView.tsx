@@ -1,6 +1,6 @@
 import { format, parseISO } from 'date-fns'
 import type { KickEvent } from '../types'
-import { getNextReset, isBeforeDailyReset } from '../lib/trackingDay'
+import { isBeforeDailyReset } from '../lib/trackingDay'
 import { Icon } from './Icon'
 import { InstallCard } from './InstallCard'
 
@@ -95,13 +95,6 @@ export function CounterView({
               Undo
             </button>
           )}
-        </div>
-        <div className="detail-card">
-          <Icon name="calendar" size={21} />
-          <div>
-            <span>Next fresh day</span>
-            <strong>{format(getNextReset(now), "EEE 'at' h:mm a")}</strong>
-          </div>
         </div>
       </div>
 
